@@ -1,0 +1,37 @@
+version: '3.0'
+services:
+
+  backend:
+    build:
+      context: ./
+      dockerfile: ./app/Dockerfile
+    command: uvicorn main:app --host 0.0.0.0 --reload
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - ./app/app:/srv/app
+    ports:
+     - "8000:8000"
+
+  db:
+    image: postgres:12
+    volumes:
+      - ./app/db-data:/var/lib/postgres/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+     - "15432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    env_file:
+      - .env
+    ports:
+      - "16543:80"
+    
