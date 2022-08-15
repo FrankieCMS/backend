@@ -27,6 +27,20 @@ services:
      - "15432:5432"
     restart: unless-stopped
 
+  db-test:
+    image: postgres:12
+    volumes:
+      - ./app/db-data-tests:/var/lib/postgres/data/pgdata
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_SERVER=db-test
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=app
+    ports:
+     - "25432:5432"
+    restart: unless-stopped
+
   pgadmin:
     image: dpage/pgadmin4
     depends_on:

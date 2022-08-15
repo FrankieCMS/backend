@@ -1,4 +1,6 @@
 """User model."""
+from uuid import uuid4
+
 from core.db import Base
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.sql import func
@@ -13,8 +15,17 @@ class User(Base):
     name = Column(String(100), nullable=True)
     username = Column(String(100), nullable=False, unique=True, index=True)
     email = Column(String, nullable=False, unique=True, index=True)
+    email_verification_token = Column(
+        String, nullable=False, unique=True, index=True, default=uuid4()
+    )
+    email_verified = Column(DateTime(timezone=True), nullable=True)
     hashed_password = Column(String, nullable=False)
-    created_at = Column(DateTime, nullable=False, server_default=func.now())
+    created_at = Column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
     updated_at = Column(
-        DateTime, nullable=False, server_default=func.now(), onupdate=func.now()
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+        onupdate=func.now(),
     )
