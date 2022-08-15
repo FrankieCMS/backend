@@ -1,7 +1,7 @@
 """User model."""
 from uuid import uuid4
 
-from core.db import Base
+from app.core.db import Base
 from sqlalchemy import Column, DateTime, Integer, String
 from sqlalchemy.sql import func
 

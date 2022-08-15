@@ -1,11 +1,11 @@
+from app.models.user import User as UserModel
 from fastapi import HTTPException, status
-from models.user import User as UserModel
 from sqlalchemy.orm import Session
 
-from .schema import BaseUser
+from .schema import UserCreate
 
 
-async def register_user(request: BaseUser, db: Session) -> UserModel:
+async def register_user(request: UserCreate, db: Session) -> UserModel:
     """Creates a new user in the database."""
     user = UserModel(
         name=request.name,

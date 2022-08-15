@@ -5,10 +5,8 @@ import warnings
 import alembic
 import pytest
 from alembic.config import Config
-from asgi_lifespan import LifespanManager
-from databases import Database
 from fastapi import FastAPI
-from httpx import AsyncClient
+from fastapi.testclient import TestClient
 
 
 # Apply migrations at beginning and end of testing session
@@ -32,18 +30,25 @@ def app(apply_migrations: None) -> FastAPI:
 
 
 # Grab a reference to our database when needed
-@pytest.fixture
-def db(app: FastAPI) -> Database:
-    return app.state._db
+@pytest.fixture()
+def db(app: FastAPI):
+    os.environ["TESTING"] = "1"
+    from app.core.config import DATABASE_URL
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+
+    DB_URL = f"{str(DATABASE_URL)}_test"
+    engine = create_engine(DB_URL, connect_args={"options": "-c timezone=utc"})
+
+    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
-# Make requests in our tests
 @pytest.fixture
-async def client(app: FastAPI) -> AsyncClient:
-    async with LifespanManager(app):
-        async with AsyncClient(
-            app=app,
-            base_url="http://testserver",
-            headers={"Content-Type": "application/json"},
-        ) as client:
-            yield client
+def client(app: FastAPI) -> TestClient:
+    return TestClient(app)
