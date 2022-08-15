@@ -20,12 +20,14 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 from core.base import Base
+
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+
 
 def get_url():
     """Get URL from environment variables."""
@@ -36,6 +38,7 @@ def get_url():
         os.getenv("DB_HOST", "db"),
         os.getenv("DB_NAME", "app"),
     )
+
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
@@ -49,7 +52,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = get_url() #config.get_main_option("sqlalchemy.url")
+    url = get_url()  # config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -68,22 +71,22 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    #connectable = engine_from_config(
+    # connectable = engine_from_config(
     #    config.get_section(config.config_ini_section),
     #    prefix="sqlalchemy.",
     #    poolclass=pool.NullPool,
-    #)
+    # )
 
     configuration = config.get_section(config.config_ini_section)
     configuration["sqlalchemy.url"] = get_url()
     connectable = engine_from_config(
-        configuration, prefix="sqlalchemy.", poolclass=pool.NullPool,
+        configuration,
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

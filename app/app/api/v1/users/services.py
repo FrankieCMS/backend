@@ -1,6 +1,8 @@
-from sqlalchemy.orm import Session
+from fastapi import HTTPException, status
 from models.user import User as UserModel
-from . schema import BaseUser
+from sqlalchemy.orm import Session
+
+from .schema import BaseUser
 
 
 async def register_user(request: BaseUser, db: Session) -> UserModel:
@@ -9,9 +11,21 @@ async def register_user(request: BaseUser, db: Session) -> UserModel:
         name=request.name,
         email=request.email,
         username=request.username,
-        hashed_password=request.password
+        hashed_password=request.password,
     )
     db.add(user)
     db.commit()
     db.refresh(user)
+    return user
+
+
+async def get_user_by_username(username: str, db: Session) -> UserModel:
+    """Find a user by username and return it."""
+    user = db.query(UserModel).filter(UserModel.username == username).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User Not Found"
+        )
+
     return user
