@@ -29,6 +29,7 @@ class UserInDB(UserBase, IDModeMixin):
     email: str
     email_verification_token: str
     email_verified: Optional[datetime]
+    hashed_password: str
     created_at: datetime
     updated_at: datetime
 

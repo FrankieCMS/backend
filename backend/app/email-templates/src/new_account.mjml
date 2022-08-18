@@ -1,0 +1,51 @@
+<mjml>
+    <mj-head>
+        <mj-font name="Inter" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" />
+        <mj-attributes>
+            <mj-text font-family="Inter, sans-serif" align="left" font-size="12px" 
+                line-height="18px" color="#333" padding="0px 0px 20px 0px"  />
+            <mj-image padding="0px" />
+            <mj-button background-color="#42b883" font-size="12px" 
+                font-weight="600" font-family="Inter, sans-serif" border-radius="5px"
+                height="35px" width="170px" padding="0px 0px 20px 0" align="left" />
+            <mj-section background-color="#ffffff" padding="0px" />
+            <mj-class name="head-text" font-size="48px" line-height="69px"
+                text-transform="uppercase" />
+        </mj-attributes>
+    </mj-head>
+    <mj-body background-color="#f1f1f1">
+        <!-- logo section -->
+        <mj-section padding="40px 0px" background-color="#f1f1f1">
+            <mj-column>
+                <mj-text padding="0px" align="left">FrankieCMS</mj-text>
+            </mj-column>
+            <mj-column>
+                <mj-text padding="0px" font-size="12px" color="#888" align="right">Some text here</mj-text>
+            </mj-column>
+        </mj-section>
+
+        <!-- welcome section -->
+        <mj-section padding="20px">
+            <mj-column>
+                <mj-text font-size="18px" line-height="28px">
+                    Almost done, <span style="font-weight:600">{{ username }}</span>! To secure your FrankieCMS account, we just need to
+                    verify your email address: <span style="font-weight:600; color:blue">{{ email }}</span></mj-text>.
+                </mj-text>
+                <mj-button href="https://{{ validate_email_link }}"> Verify email address </mj-button>
+                <mj-text>
+                    This will let you receive notifications and password resets from 
+                    FrankieCMS.
+                </mj-text>
+                <mj-text font-size="11px" color="#555">
+                    Button not working? Paste the following link into your browser:
+                    <span style="color:blue">https://{{ validate_email_link }}</span>
+                </mj-text>
+                <mj-text font-size="11px" color="#555">
+                    You're receiving this email because you recently created a new FrankieCMS
+                    account or added a new email address. If this wasn't you, please ignore this email.
+                </mj-text>
+                <mj-divider border-width="1px" padding="5px 0px 25px 0" border-style="solid" border-color="#e1e1e1" />
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

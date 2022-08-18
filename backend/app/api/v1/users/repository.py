@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from app.api.v1.users.schema import UserCreate
 from app.db.repositories.base import BaseRepository
 from app.models.user import User as UserModel
@@ -32,3 +34,8 @@ class UsersRepository(BaseRepository):
             )
 
         return user
+
+    async def update_user_email_verified(self, username: str) -> UserModel:
+        query = self.db.query(UserModel).filter(UserModel.username == username)
+        query.update({self.base_model.email_verified: datetime.utcnow()})
+        return await self.get_user_by_username(username)
