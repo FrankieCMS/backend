@@ -15,6 +15,13 @@ services:
       - ./backend:/srv/backend
     ports:
      - "8000:8000"
+  
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: frankiecms-mailhog
+    ports:
+      - "8003:1025"
+      - "8100:8025"
 
   db:
     image: postgres:12
