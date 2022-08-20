@@ -1,16 +1,24 @@
 """User model."""
 from datetime import datetime
-from typing import Optional
+from typing import TYPE_CHECKING, List, Optional
 
+from app.support.models.mixins import IDMixin
+from pydantic import EmailStr
 from sqlalchemy import Column, DateTime, String
 from sqlalchemy.sql import func
-from sqlmodel import Field, SQLModel
+from sqlmodel import Field, Relationship, SQLModel
+
+if TYPE_CHECKING:
+    from app.models import Post
 
 
-class BaseUser(SQLModel):
-    name: str = Field(max_length=100, nullable=True)
+class UserBase(SQLModel):
+    __tablename__: str = "users"
+    name: str = Field(max_length=100, sa_column=Column("name", String, nullable=True))
     username: str = Field(
-        sa_column=Column("name", String(100), nullable=False, unique=True, index=True),
+        sa_column=Column(
+            "username", String(100), nullable=False, unique=True, index=True
+        ),
     )
     email: str = Field(
         sa_column=Column("email", String, nullable=False, unique=True, index=True)
@@ -33,6 +41,34 @@ class BaseUser(SQLModel):
         )
     )
 
+    posts: List["Post"] = Relationship(back_populates="post")
 
-class User(BaseUser, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+
+class User(IDMixin, UserBase, table=True):
+    pass
+
+
+class UserCreate(SQLModel):
+    name: Optional[str]
+    username: str
+    email: EmailStr
+    password: str
+    password_confirmation: str
+
+
+class UserUpdate(UserBase):
+    pass
+
+
+class UserInDB(IDMixin, UserBase):
+    """Display User Schema"""
+
+    pass
+
+
+class UserPublic(IDMixin):
+    name: Optional[str]
+    username: str
+    email: str
+    created_at: datetime
+    updated_at: datetime

@@ -1,12 +1,12 @@
 from typing import Callable
 
-from app.db.tasks import close_db_connection, connect_to_db
+from app.db.tasks import apply_db_migrations, close_db_connection
 from fastapi import FastAPI
 
 
 def create_start_app_handler(app: FastAPI) -> Callable:
     async def start_app() -> None:
-        await connect_to_db(app)
+        await apply_db_migrations(app)
 
     return start_app
 

@@ -1,34 +1,23 @@
 import logging
 
-from app.core.config import DATABASE_URL
+import alembic
+from alembic.config import Config
+from app.db.connection import engine
+from app.models import Post, User  # noqa: F401
 from fastapi import FastAPI
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlmodel import SQLModel  # noqa: F401
 
 logger = logging.getLogger(__name__)
 
 
 def get_engine():
-    return create_engine(str(DATABASE_URL), connect_args={"options": "-c timezone=utc"})
+    return engine
 
 
-async def get_local_session():
-    return sessionmaker(autocommit=False, autoflush=False, bind=get_engine())
-
-
-async def connect_to_db(app: FastAPI) -> None:
-    pass
-    """engine = create_engine(
-        str(DATABASE_URL), connect_args={"options": "-c timezone=utc"}
-    )
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    try:
-        app.state._db = SessionLocal()
-        logger.warn("INFO: Connected to database.")
-    except Exception as e:
-        logger.warn("--- DB CONNECTION ERROR ---")
-        logger.warn(e)
-        logger.warn("--- DB CONNECTION ERROR ---")"""
+async def apply_db_migrations(app: FastAPI) -> None:
+    config = Config("alembic.ini")
+    alembic.command.upgrade(config, "head")  # type: ignore
+    logger.warn("INFO:     Updating Database Schema.")
 
 
 async def close_db_connection(app: FastAPI) -> None:
