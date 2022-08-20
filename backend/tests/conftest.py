@@ -1,12 +1,15 @@
 # https://www.jeffastor.com/blog/testing-fastapi-endpoints-with-docker-and-pytest
 import os
 import warnings
+from typing import Type
 
 import alembic
 import pytest
 from alembic.config import Config
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
+from sqlalchemy.future import Engine
+from sqlmodel import Session
 
 
 # Apply migrations at beginning and end of testing session
@@ -31,22 +34,17 @@ def app(apply_migrations: None) -> FastAPI:
 
 # Grab a reference to our database when needed
 @pytest.fixture()
-def db(app: FastAPI):
+def db_session(app: FastAPI) -> Type[Session]:
     os.environ["TESTING"] = "1"
-    from app.core.config import DATABASE_URL
-    from sqlalchemy import create_engine
-    from sqlalchemy.orm import sessionmaker
+    return Session
 
-    DB_URL = f"{str(DATABASE_URL)}_test"
-    engine = create_engine(DB_URL, connect_args={"options": "-c timezone=utc"})
 
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+@pytest.fixture()
+def db_engine(app: FastAPI) -> Engine:
+    os.environ["TESTING"] = "1"
+    from app.db.connection import engine
 
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    return engine
 
 
 @pytest.fixture
