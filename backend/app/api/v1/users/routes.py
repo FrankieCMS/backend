@@ -11,6 +11,8 @@ from app.services.mailer import MailService
 from app.support.hashing import Hashing
 from fastapi import APIRouter, Depends, Request, status
 
+from . import validators
+
 router = APIRouter(prefix="/users", tags=["users"])
 
 
@@ -24,6 +26,12 @@ async def register_user(
     mail: MailService = Depends(get_mailer),
 ) -> UserInDB:
     """Register a new user."""
+    await validators.passwords_match(
+        password=request.password, password_confirmation=request.password_confirmation
+    )
+    await validators.username_is_unique(username=request.username, repository=user_repo)
+    await validators.email_is_unique(email=request.email, repository=user_repo)
+
     user = user_repo.register_user(request, hashing)
     token = hashing.create_token(
         {"id": user.id, "subject": user.username, "email": user.email},
