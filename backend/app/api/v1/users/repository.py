@@ -3,8 +3,8 @@ from datetime import datetime
 from app.models.user import User, UserCreate, UserInDB
 from app.support.db.repository import Repository
 from app.support.hashing import Hashing
-from fastapi import HTTPException, status
-from sqlmodel import SQLModel, select
+from pydantic import EmailStr
+from sqlmodel import select
 
 
 class UsersRepository(Repository):
@@ -27,21 +27,25 @@ class UsersRepository(Repository):
 
             return user  # type: ignore
 
-    def get_user_by_username(self, username: str) -> SQLModel:
+    def get_user_by_username(self, username: str) -> UserInDB:
         """Find a user by username and return it."""
         with self.session(self.engine) as session:
             statement = select(self.model).where(User.username == username)
             results = session.exec(statement)
             user = results.first()
 
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User Not Found"
-            )
+        return user  # type: ignore
 
-        return user
+    def get_user_by_email(self, email: EmailStr) -> UserInDB:
+        """Find a user by username and return it."""
+        with self.session(self.engine) as session:
+            statement = select(self.model).where(User.email == email)
+            results = session.exec(statement)
+            user = results.first()
 
-    def update_user_email_verified(self, username: str) -> SQLModel:
+        return user  # type: ignore
+
+    def update_user_email_verified(self, username: str) -> UserInDB:
         user = self.get_user_by_username(username)
 
         with self.session(self.engine) as session:
@@ -50,4 +54,4 @@ class UsersRepository(Repository):
             session.commit()
             session.refresh(user)
 
-        return user
+        return user  # type: ignore
