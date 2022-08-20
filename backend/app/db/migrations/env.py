@@ -1,9 +1,13 @@
 import os
 
 import alembic
+from app.core.base import Base
 from app.core.config import DATABASE_URL, POSTGRES_DB
 from psycopg2 import DatabaseError
 from sqlalchemy import create_engine, engine_from_config, pool
+
+target_metadata = Base.metadata  # type: ignore
+
 
 # Alembic Config object, which provides access to values within the .ini file
 config = alembic.context.config
@@ -39,7 +43,9 @@ def run_migrations_online() -> None:
         )
 
     with connectable.connect() as connection:
-        alembic.context.configure(connection=connection, target_metadata=None)
+        alembic.context.configure(
+            connection=connection, target_metadata=target_metadata
+        )
         with alembic.context.begin_transaction():
             alembic.context.run_migrations()
 
