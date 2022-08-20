@@ -1,12 +1,13 @@
 import os
 
 import alembic
-from app.core.base import Base
 from app.core.config import DATABASE_URL, POSTGRES_DB
+from app.models import Post, User  # noqa: F401
 from psycopg2 import DatabaseError
 from sqlalchemy import create_engine, engine_from_config, pool
+from sqlmodel import SQLModel
 
-target_metadata = Base.metadata  # type: ignore
+target_metadata = SQLModel.metadata  # type: ignore
 
 
 # Alembic Config object, which provides access to values within the .ini file
